@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
     def begin(self):
         self.ui.lbNumerator.setText('')
         self.ui.lbDenominator.setText('')
+        self.ui.lbLine.setText('')
         denominator = False
 
         # Берем значения с QCheckBox, которые выбрал пользователь
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
 
 
         elif self.ui.cbLevel.currentText() == 'Сложная':
-            denominator = True
+            self.ui.lbLine.setText('———————————————————————')
 
             task_user_n, task_comp_n = TaskGenerate.generate_high_level(sin_a, cos_a, tg_a, ctg_a)
             task_user_d, task_comp_d = TaskGenerate.generate_high_level(sin_a, cos_a, tg_a, ctg_a)
