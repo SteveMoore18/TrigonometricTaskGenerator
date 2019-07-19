@@ -167,6 +167,7 @@ class Generate:
     # Главная функция по генерации выражений
     def generate_task(self, level):
 
+
         # Легкий уровень
         if level == 0:
             # Запись базовых градусов, которые выделены в таблице
@@ -190,9 +191,16 @@ class Generate:
             # Здесь будут хранится конечные радианы. То есть переводим градусы в радианы
             temp_list_radians = []
             for i in range(0, self.count_operands):
-                temp_grad = self.graduses_list[i]
+                temp_grad = float(temp_list_graduses[i].replace('°', ''))
                 temp_radian = math.radians(temp_grad)
                 temp_list_radians.append(round(temp_radian, decimal_places))
+
+            # Форматируем выражение для компьютера
+            self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
+
+            print (self.task_for_comp)
+
+
 
 
         # Средний(1) и сложный(2) уровень
@@ -213,7 +221,6 @@ class Generate:
             self.__initialization_in_level()
 
             temp_list_arguments = []
-
             self.__cr_temp_mh(temp_list_arguments)
 
             self.task_for_user = self.task_for_user.format(*temp_list_arguments)
@@ -223,15 +230,14 @@ class Generate:
             # Здесь идет распределение радиан и градусов по аргументам
             self.__distribution_args_mh(temp_list_radians, temp_list_arguments)
 
+            # Форматируем выражение для компьютера
+            self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
 
 
-        # Форматируем выражение для компьютера
-        self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
         self.__change_task_comp()
 
-
-
+        self.trigonomentric_funcs.clear()
 
         return (self.task_for_user, self.task_for_comp)
