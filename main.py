@@ -103,7 +103,15 @@ class MainWindow(QMainWindow):
 
             self.ui.lbNumerator.setText(task_user)
 
-            comp_result = round(eval(task_comp), self.decimal_places)
+            comp_result = 0.0
+
+            try:
+
+                comp_result = round(eval(task_comp), self.decimal_places)
+
+            except NameError:
+                self.begin()
+
 
             if comp_result < -10.0 or comp_result > 10.0:
                 self.begin()
