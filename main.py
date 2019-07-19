@@ -25,6 +25,13 @@ class MainWindow(QMainWindow):
 
     comp_result = 0.0
 
+    task_user_n = ''
+    task_comp_n = ''
+
+    task_user_d = ''
+    task_comp_d = ''
+
+
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_design()
@@ -51,17 +58,12 @@ class MainWindow(QMainWindow):
         self.ui.btnAddSqrt_2.setEnabled(False)
 
 
-
-
-
     # Начало генерации выражений
     def begin(self):
-
 
         self.ui.lbNumerator.setText('')
         self.ui.lbDenominator.setText('')
         self.ui.lbLine.setText('')
-        denominator = False
 
         # Берем значения с QCheckBox, которые выбрал пользователь
         sin_a = self.ui.chBoxSin.isChecked()
@@ -70,7 +72,6 @@ class MainWindow(QMainWindow):
         ctg_a = self.ui.chBoxCtg.isChecked()
 
         generate = TaskGenerate.Generate(sin_a, cos_a, tg_a, ctg_a)
-
 
 
         # Если пользователь ничего не выбрал, то вылазиет ошибка
@@ -86,63 +87,45 @@ class MainWindow(QMainWindow):
         self.ui.btnAddSqrt_2.setEnabled(True)
 
 
-
-        # Если режим "Легкий", то выполняем это условие
         if self.ui.cbLevel.currentText() == 'Легкая':
-
-            task_user, task_comp = generate.generate_task(0)
-
-            self.ui.lbNumerator.setText(task_user)
-
-
-            comp_result = round(eval(task_comp), self.decimal_places)
-
-
-            if comp_result < -10.0 or comp_result > 10.0:
-                self.begin()
-            else:
-                self.comp_result = str(comp_result)
+            self.task_user_n, self.task_comp_n = generate.generate_task(0)
 
         elif self.ui.cbLevel.currentText() == 'Средняя':
-
-            task_user, task_comp = generate.generate_task(1)
-
-            self.ui.lbNumerator.setText(task_user)
-
-            comp_result = round(eval(task_comp), self.decimal_places)
-
-
-            if comp_result < -10.0 or comp_result > 10.0:
-                self.begin()
-            else:
-                self.comp_result = str(comp_result)
-
-
+            self.task_user_n, self.task_comp_n = generate.generate_task(1)
 
         elif self.ui.cbLevel.currentText() == 'Сложная':
             self.ui.lbLine.setText('———————————————————————')
+            generate2 = TaskGenerate.Generate(sin_a, cos_a, tg_a, ctg_a)
 
-            generate_d = TaskGenerate.Generate(sin_a, cos_a, tg_a, ctg_a)
-
-            task_user_n, task_comp_n = generate.generate_task(2)
-            task_user_d, task_comp_d = generate_d.generate_task(2)
-
-            self.ui.lbNumerator.setText(task_user_n)
-            self.ui.lbDenominator.setText(task_user_d)
+            # Генерируем 2 выражения. Для числителя и знаменателя
+            self.task_user_n, self.task_comp_n = generate.generate_task(2)
+            self.task_user_d, self.task_comp_d = generate2.generate_task(2)
 
 
-            comp_result_n = round(eval(task_comp_n), self.decimal_places)
-            comp_result_d = round(eval(task_comp_d), self.decimal_places)
+        # Если режим легкий или средний, то выполняем этот маленький код
+        if self.ui.cbLevel.currentText() == 'Легкая' or self.ui.cbLevel.currentText() == 'Средняя':
 
-            comp_result = round(comp_result_n / comp_result_d, self.decimal_places)
-
+            self.ui.lbNumerator.setText(self.task_user_n)
+            comp_result = round(eval(self.task_comp_n), self.decimal_places)
             self.comp_result = comp_result
 
+        else:
+            self.ui.lbNumerator.setText(self.task_user_n)
+            self.ui.lbDenominator.setText(self.task_user_d)
 
-            '''if comp_result < -10.0 or comp_result > 10.0:
+            comp_result_n = round(eval(self.task_comp_n), self.decimal_places)
+            comp_result_d = round(eval(self.task_comp_d), self.decimal_places)
+
+            try:
+
+                self.comp_result = round(comp_result_n / comp_result_d, self.decimal_places)
+
+            except ZeroDivisionError:
                 self.begin()
-            else:
-                self.comp_result = str(comp_result)'''
+
+
+
+
 
 
 
@@ -203,8 +186,6 @@ class MainWindow(QMainWindow):
             msg = QMessageBox()
             msg.setText('Ошибка. Проверьте, возможно вы не так ввели значения.')
             msg.exec_()
-
-
 
 
     def btnAddPi_1(self):
