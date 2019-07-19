@@ -58,6 +58,17 @@ class MainWindow(QMainWindow):
     def begin(self):
         self.ui.lbNumerator.setText('')
 
+        # Берем значения с QCheckBox, которые выбрал пользователь
+        sin_a = self.ui.chBoxSin.isChecked()
+        cos_a = self.ui.chBoxCos.isChecked()
+        tg_a = self.ui.chBoxTg.isChecked()
+        ctg_a = self.ui.chBoxCtg.isChecked()
+
+        # Если пользователь ничего не выбрал, то вылазиет ошибка
+        if sin_a == False and cos_a == False and tg_a == False and ctg_a == False:
+            self.ui.lbNumerator.setText('Ошибка. Вы не выбрали ни одного пункта.')
+            return -1
+
         # Активируем заблокированые кнопки
         self.ui.btnCheckAnswerUser.setEnabled(True)
         self.ui.btnAddPi_1.setEnabled(True)
@@ -65,11 +76,7 @@ class MainWindow(QMainWindow):
         self.ui.btnAddSqrt_1.setEnabled(True)
         self.ui.btnAddSqrt_2.setEnabled(True)
 
-        # Берем значения с QCheckBox, которые выбрал пользователь
-        sin_a = self.ui.chBoxSin.isChecked()
-        cos_a = self.ui.chBoxCos.isChecked()
-        tg_a = self.ui.chBoxTg.isChecked()
-        ctg_a = self.ui.chBoxCtg.isChecked()
+
 
         # Если режим "Легкий", то выполняем это условие
         if self.ui.cbLevel.currentText() == 'Легкая':
@@ -78,12 +85,7 @@ class MainWindow(QMainWindow):
             # кортеж (выражение для пользователя и выражение, которое поймет компьютер)
             task_user, task_comp = TaskGenerate.generate_easy_task(sin_a, cos_a, tg_a, ctg_a)
 
-            # Если пользователь ничего не выбрал, то вылазиет ошибка
-            if task_user == 0 and task_comp == 0:
-                self.ui.lbNumerator.setText('Ошибка. Вы не выбрали ни одного пункта.')
-                return -1
-            else:
-                self.ui.lbNumerator.setText(task_user)
+            self.ui.lbNumerator.setText(task_user)
 
             # Присваиваем переменной comp_result результат выполнения выражения
             comp_result = round(eval(task_comp), self.decimal_places)
@@ -95,6 +97,20 @@ class MainWindow(QMainWindow):
                 self.begin()
             else:
                 self.comp_result = str(comp_result)
+
+        elif self.ui.cbLevel.currentText() == 'Средняя':
+            task_user, task_comp = TaskGenerate.generate_middle_task(sin_a, cos_a, tg_a, ctg_a)
+
+            self.ui.lbNumerator.setText(task_user)
+
+            comp_result = round(eval(task_comp), self.decimal_places)
+
+            if comp_result < -10.0 or comp_result > 10.0:
+                self.begin()
+            else:
+                self.comp_result = str(comp_result)
+
+
 
 
     # Если пользователь приготовил ответ, и нажал на кнопку "Проверить", то вызывается эта функция
