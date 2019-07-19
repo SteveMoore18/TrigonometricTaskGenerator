@@ -103,7 +103,6 @@ class Generate:
             self.task_for_comp = self.task_for_comp.replace(temp_ctg, temp_replaced_ctg)
 
 
-
     def __change_task_comp(self):
         self.task_for_comp = self.task_for_comp.replace('×', '*')
         self.task_for_comp = self.task_for_comp.replace('÷', '/')
@@ -112,6 +111,39 @@ class Generate:
         self.task_for_comp = self.task_for_comp.replace('sin', 'math.sin')
         self.task_for_comp = self.task_for_comp.replace('cos', 'math.cos')
         self.task_for_comp = self.task_for_comp.replace('tg', 'math.tan')
+
+    def __initialization_in_level(self):
+        self.__init_trigonometric_list()
+        self.count_operands = random.randint(1, 3)
+        self.__generate_template_task()
+
+        self.task_for_user = self.task_for_user[0:-2]
+        self.task_for_comp = self.task_for_user
+
+    def __cr_temp_mh(self, temp_list_arguments):
+        for i in range(0, self.count_operands):
+            g_or_r = random.randint(1, 2)
+
+            if g_or_r == 1:
+                num = self.graduses_list[random.randint(0, self.graduses_list_size)]
+                temp_list_arguments.append(str(num))
+            elif g_or_r == 2:
+                num = self.radian_lists[random.randint(0, self.radian_lists_size)]
+                temp_list_arguments.append(str(num))
+
+
+
+    def __distribution_args_mh(self, temp_list_radians, temp_list_arguments):
+        for i in range(0, self.count_operands):
+            temp_arg = temp_list_arguments[i]
+            temp_arg = temp_arg.replace('π', 'math.pi')
+            temp_arg = temp_arg.replace('°', '')
+            temp_arg = temp_arg.replace('×', '*')
+
+            if temp_arg.find('pi') != -1:
+                temp_list_radians.append(round(eval(temp_arg), decimal_places))
+            else:
+                temp_list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
 
 
 
@@ -122,12 +154,7 @@ class Generate:
             self.graduses_list = [30, 45, 60, 90, 120, 135, 150, 180, 270, 360]
             self.graduses_list_size = len(self.graduses_list)
 
-            self.__init_trigonometric_list()
-            self.count_operands = random.randint(1, 3)
-            self.__generate_template_task()
-
-            self.task_for_user = self.task_for_user[0:-2]
-            self.task_for_comp = self.task_for_user
+            self.__initialization_in_level()
 
             temp_list_graduses = []
             for i in range(0, self.count_operands):
@@ -135,7 +162,6 @@ class Generate:
                 temp_list_graduses.append(str(gradus) + '°')
 
             self.task_for_user = self.task_for_user.format(*temp_list_graduses)
-
             self.__replace_ctg()
 
 
@@ -157,40 +183,17 @@ class Generate:
 
             self.graduses_list_size = len(self.graduses_list)
 
-            self.__init_trigonometric_list()
-            self.count_operands = random.randint(1, 3)
-            self.__generate_template_task()
-
-            self.task_for_user = self.task_for_user[0:-2]
-            self.task_for_comp = self.task_for_user
+            self.__initialization_in_level()
 
             temp_list_arguments = []
-            for i in range(0, self.count_operands):
-                g_or_r = random.randint(1, 2)
-
-                if g_or_r == 1:
-                    num = self.graduses_list[random.randint(0, self.graduses_list_size)]
-                    temp_list_arguments.append(str(num))
-                elif g_or_r == 2:
-                    num = self.radian_lists[random.randint(0, self.radian_lists_size)]
-                    temp_list_arguments.append(str(num))
-
+            self.__cr_temp_mh(temp_list_arguments)
 
             self.task_for_user = self.task_for_user.format(*temp_list_arguments)
-
             self.__replace_ctg()
 
             temp_list_radians = []
-            for i in range(0, self.count_operands):
-                temp_arg = temp_list_arguments[i]
-                temp_arg = temp_arg.replace('π', 'math.pi')
-                temp_arg = temp_arg.replace('°', '')
-                temp_arg = temp_arg.replace('×', '*')
+            self.__distribution_args_mh(temp_list_radians, temp_list_arguments)
 
-                if temp_arg.find('pi') != -1:
-                    temp_list_radians.append(round(eval(temp_arg), decimal_places))
-                else:
-                    temp_list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
 
             self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
@@ -212,35 +215,21 @@ class Generate:
             self.task_for_comp = self.task_for_user
 
             temp_list_arguments = []
-            for i in range(0, self.count_operands):
-                g_or_r = random.randint(1, 2)
-
-                if g_or_r == 1:
-                    num = self.graduses_list[random.randint(0, self.graduses_list_size - 1)]
-                    temp_list_arguments.append(str(num))
-                elif g_or_r == 2:
-                    num = self.radian_lists[random.randint(0, self.radian_lists_size - 1)]
-                    temp_list_arguments.append(str(num))
+            self.__cr_temp_mh(temp_list_arguments)
 
             self.task_for_user = self.task_for_user.format(*temp_list_arguments)
 
             self.__replace_ctg()
 
             temp_list_radians = []
-            for i in range(0, self.count_operands):
-                temp_arg = temp_list_arguments[i]
-                temp_arg = temp_arg.replace('π', 'math.pi')
-                temp_arg = temp_arg.replace('°', '')
-                temp_arg = temp_arg.replace('×', '*')
-
-                if temp_arg.find('pi') != -1:
-                    temp_list_radians.append(round(eval(temp_arg), decimal_places))
-                else:
-                    temp_list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
+            self.__distribution_args_mh(temp_list_radians, temp_list_arguments)
 
             self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
             self.__change_task_comp()
+
+
+
 
         return (self.task_for_user, self.task_for_comp)
 
