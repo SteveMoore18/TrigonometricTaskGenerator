@@ -16,17 +16,14 @@ Test PyCharm
 
 
 class MainWindow(QMainWindow):
-    # Переменная в которой будет хранится результат от пользователя
-    user_result = ''
 
-    # Переменная в которой будет хранится результат от компьютера
-    comp_result = ''
 
     # Сколько знаков будет после запятой
     decimal_places = 10
 
     denominator = False
 
+    comp_result = 0.0
 
     def __init__(self):
         QMainWindow.__init__(self)
@@ -55,8 +52,12 @@ class MainWindow(QMainWindow):
 
 
 
+
+
     # Начало генерации выражений
     def begin(self):
+
+
         self.ui.lbNumerator.setText('')
         self.ui.lbDenominator.setText('')
         self.ui.lbLine.setText('')
@@ -67,6 +68,10 @@ class MainWindow(QMainWindow):
         cos_a = self.ui.chBoxCos.isChecked()
         tg_a = self.ui.chBoxTg.isChecked()
         ctg_a = self.ui.chBoxCtg.isChecked()
+
+        generate = TaskGenerate.Generate(sin_a, cos_a, tg_a, ctg_a)
+
+
 
         # Если пользователь ничего не выбрал, то вылазиет ошибка
         if sin_a == False and cos_a == False and tg_a == False and ctg_a == False:
@@ -85,36 +90,26 @@ class MainWindow(QMainWindow):
         # Если режим "Легкий", то выполняем это условие
         if self.ui.cbLevel.currentText() == 'Легкая':
 
-            # Берем решение из модуля TaskGenerate функцию generate_easy_task, которая возвращает
-            # кортеж (выражение для пользователя и выражение, которое поймет компьютер)
-            task_user, task_comp = TaskGenerate.generate_easy_task(sin_a, cos_a, tg_a, ctg_a)
+            task_user, task_comp = generate.generate_task(0)
 
             self.ui.lbNumerator.setText(task_user)
 
-            # Присваиваем переменной comp_result результат выполнения выражения
+
             comp_result = round(eval(task_comp), self.decimal_places)
 
-            # Существуют невозможные решения тригонометрических выражений, и если получили странный ответ
-            # (обычно получается больше 100 000), то мы делаем проверку, если полученое значение выше 10,
-            # то перегенерируем выражение
+
             if comp_result < -10.0 or comp_result > 10.0:
                 self.begin()
             else:
                 self.comp_result = str(comp_result)
 
         elif self.ui.cbLevel.currentText() == 'Средняя':
-            task_user, task_comp = TaskGenerate.generate_middle_task(sin_a, cos_a, tg_a, ctg_a)
+
+            task_user, task_comp = generate.generate_task(1)
 
             self.ui.lbNumerator.setText(task_user)
 
-            comp_result = 0.0
-
-            try:
-                # Присваиваем переменной comp_result результат выполнения выражения
-                comp_result = round(eval(task_comp), self.decimal_places)
-
-            except NameError:
-                self.begin()
+            comp_result = round(eval(task_comp), self.decimal_places)
 
 
             if comp_result < -10.0 or comp_result > 10.0:
@@ -127,30 +122,29 @@ class MainWindow(QMainWindow):
         elif self.ui.cbLevel.currentText() == 'Сложная':
             self.ui.lbLine.setText('———————————————————————')
 
-            task_user_n, task_comp_n = TaskGenerate.generate_high_level(sin_a, cos_a, tg_a, ctg_a)
-            task_user_d, task_comp_d = TaskGenerate.generate_high_level(sin_a, cos_a, tg_a, ctg_a)
+            generate_d = TaskGenerate.Generate(sin_a, cos_a, tg_a, ctg_a)
+
+            task_user_n, task_comp_n = generate.generate_task(2)
+            task_user_d, task_comp_d = generate_d.generate_task(2)
 
             self.ui.lbNumerator.setText(task_user_n)
             self.ui.lbDenominator.setText(task_user_d)
 
-            comp_result = 0.0
 
-            try:
+            comp_result_n = round(eval(task_comp_n), self.decimal_places)
+            comp_result_d = round(eval(task_comp_d), self.decimal_places)
 
-                comp_result_n = round(eval(task_comp_n), self.decimal_places)
-                comp_result_d = round(eval(task_comp_d), self.decimal_places)
+            comp_result = round(comp_result_n / comp_result_d, self.decimal_places)
 
-                comp_result = round(comp_result_n / comp_result_d, self.decimal_places)
+            self.comp_result = comp_result
 
-            except NameError:
-                self.begin()
-            except ZeroDivisionError:
-                self.begin()
 
-            if comp_result < -10.0 or comp_result > 10.0:
+            '''if comp_result < -10.0 or comp_result > 10.0:
                 self.begin()
             else:
-                self.comp_result = str(comp_result)
+                self.comp_result = str(comp_result)'''
+
+
 
     # Если пользователь приготовил ответ, и нажал на кнопку "Проверить", то вызывается эта функция
     def checkAnswerFromUser(self):

@@ -66,6 +66,7 @@ class Ui_design(object):
         font.setPointSize(12)
         self.chBoxCtg.setFont(font)
         self.chBoxCtg.setObjectName("chBoxCtg")
+        self.chBoxCtg.setChecked(True)
         self.pushButton = QtWidgets.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(10, 260, 191, 31))
         font = QtGui.QFont()

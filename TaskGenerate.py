@@ -22,308 +22,227 @@ import random
 
 decimal_places = 10
 
-operators = ['+', '-', '×', '÷']
 
-# sin_a, cos_a, tg_a, ctg_a - если пользоватль выбрал с какими конкретно функциями хочет тренероваться
-def generate_easy_task(sin_a, cos_a, tg_a, ctg_a):
-    # Дефолтные градусы
-    low_level_graduses = [30, 45, 60, 90, 120, 135, 150, 180, 270, 360]
-    graduses_size = len(low_level_graduses)
-
-
-    trig = []
-
-
-    if sin_a == True:
-        trig.append('sin({')
-    if cos_a == True:
-        trig.append('cos({')
-    if tg_a == True:
-        trig.append('tg({')
-    if ctg_a == True:
-        trig.append('ctg({')
-
-    trig_size = len(trig)
 
-    if trig_size == 0:
-        return (0, 0)
 
-    # Переменная, которую увидит пользователь
-    temp_str_task = ''
+class Generate:
 
-    # Переменная, которую будет обрабатывать компьютер
-    temp_str_task_c = ''
+    sin_a = False
+    cos_a = False
+    tg_a  = False
+    ctg_a = False
 
-    # Генерируем количество операндов в выражении
-    count_operands = random.randint(1, 3)
+    graduses_list       = []
+    graduses_list_size  = 0
 
-    # counter - нужен для обозначения аргументов в строке, для функции .format()
-    counter = 0
-
-    # Генерируем случайный пример
-    for a in range(0, count_operands):
-        # В temp_str_task сначала записываем тригонометрическую функцию, потом добавляем '}) ', а потом рандомный оператор
-        temp_str_task += trig[random.randint(0, (trig_size - 1))] + str(counter) + '}°) ' + operators[random.randint(0, 3)] + ' '
-        counter += 1
+    trigonomentric_funcs      = []
+    trigonomentric_funcs_size = 0
 
-    # Удаляем 2 последних символа, т.к там может стоять оператор
-    temp_str_task = temp_str_task[0:-2]
-    temp_str_task_c = temp_str_task
+    radian_lists = ['π/4', 'π/4', 'π/3', 'π/2', '2 × π/3', '3 × π/4', '5 × π/6', 'π', '3 × π/2', '2 × π']
+    radian_lists_size = len(radian_lists)
 
-    # Здесь будут храниться рандомно выбранные градусы из low_level_graduses, для того, чтобы их можно было записать в temp_str_task используя функцию .format()
-    list_graduses = []
-    for i in range(0, count_operands):
-        # Заполняем случайными элементами из low_level_graduses
-        list_graduses.append(low_level_graduses[random.randint(0, graduses_size - 1)])
+    operators = []
 
-    # Теперь  применяя функцию .format(), в аргумент передаем list_graduses и он заполняет строку градусами
-    # И по сути, строчка пользователя готова
-    temp_str_task = temp_str_task.format(*list_graduses)
 
-    # Теперь займемся выражением для компьютера
+    task_for_user = ''
+    task_for_comp = ''
 
-    # Т.к котангенса нет в стандартной библиотеки math, то вы сделаем по формуле ctg = sin(a) / cos(a)
-    # Для начала вычисляем на какой позиции находится котангенс
-    ctg_pos = temp_str_task_c.find('ctg')
+    count_operands = 0
 
-    # Эта переменная нужна для того, чтобы узнать в какой аргумент, функции format(), записывать значения
-    arg_count = 0
 
-    # Если ctg является вторым операндом, то arg_count будет 1
-    if ctg_pos >= 9 and ctg_pos <= 18:
-        arg_count = 1
-    # И если ctg является третим операндом, то arg_count будет 2
-    elif ctg_pos >= 20 and ctg_pos <= 29:
-        arg_count = 2
 
-    # Список для хранения радиан. То есть переводим список с градусами(list_graduses) в радианы, т.к синус, косинус и т.д принимают радианы
-    list_radians = []
-    for i in range(0, count_operands):
-        # Берем элемент
-        temp_grad = list_graduses[i]
-        # И с помощью стандартной функции math.radians() библиотеки math, мы преобразуем градусы в радианы
-        list_radians.append(round(math.radians(temp_grad), decimal_places))
 
-    # И после всего этого, мы в переменную, с которой будет работать компьютер, записываем радианы, а также, если нашли котангес, то
-    # идем по стандартной формуле sin(a) / cos(a)
-    temp_str_task_c = temp_str_task_c.replace('ctg({' + str(arg_count) + '}°)',
-                                              '(cos({' + str(arg_count) + '})/sin({' + str(arg_count) + '}))').format(
-        *list_radians)
+    def __init__(self, sin_a, cos_a, tg_a, ctg_a):
+        self.sin_a = sin_a
+        self.cos_a = cos_a
+        self.tg_a  = tg_a
+        self.ctg_a = ctg_a
 
-    temp_str_task_c = temp_str_task_c.replace('×', '*')
-    temp_str_task_c = temp_str_task_c.replace('÷', '/')
-    temp_str_task_c = temp_str_task_c.replace('°', '')
-    temp_str_task_c = temp_str_task_c.replace(' ', '')
-    temp_str_task_c = temp_str_task_c.replace('sin', 'math.sin')
-    temp_str_task_c = temp_str_task_c.replace('cos', 'math.cos')
-    temp_str_task_c = temp_str_task_c.replace('tg', 'math.tan')
+        self.operators = ['+', '-', '×', '÷']
 
-    return (temp_str_task, temp_str_task_c)
 
+    def __init_trigonometric_list(self):
+        if self.sin_a == True:
+            self.trigonomentric_funcs.append('sin({')
+        if self.cos_a == True:
+            self.trigonomentric_funcs.append('cos({')
+        if self.tg_a == True:
+            self.trigonomentric_funcs.append('tg({')
+        if self.ctg_a == True:
+            self.trigonomentric_funcs.append('ctg({')
 
+        self.trigonomentric_funcs_size = len(self.trigonomentric_funcs)
 
-def generate_middle_task(sin_a, cos_a, tg_a, ctg_a):
-    radians = {
-        'π/6' : round(math.pi / 6, decimal_places),
-        'π/4' : round(math.pi / 4, decimal_places),
-        'π/3' : round(math.pi / 3, decimal_places),
-        'π/2' : round(math.pi / 2, decimal_places),
-        '2π/3': round(2 * math.pi / 3, decimal_places),
-        '3π/4': round(3 * math.pi / 4, decimal_places),
-        '5π/6': round(5 * math.pi / 6, decimal_places),
-        'π'   : round(math.pi, decimal_places),
-        '3π/2': round(3 * math.pi / 2, decimal_places),
-        '2π'  : round(2 * math.pi, decimal_places),
-    }
 
-    middle_level_graduses = []
-    for i in range(5, 360, 5):
-        middle_level_graduses.append(i)
+    def __generate_template_task(self):
+        counter_args = 0
 
-    m_l_g_size = len(middle_level_graduses)
+        # Генерируем случайный пример
+        for a in range(0, self.count_operands):
+            trig_func = self.trigonomentric_funcs[random.randint(0, (self.trigonomentric_funcs_size - 1))]
+            operator  = self.operators[random.randint(0, 3)]
 
+            self.task_for_user += trig_func + str(a) + '}) ' + operator + ' '
+            counter_args += 1
 
 
-    middle_level_radians   = ['π/4', 'π/4', 'π/3', 'π/2', '2 × π/3', '3 × π/4', '5 × π/6', 'π', '3 × π/2', '2 × π']
-    m_l_r_size = len(middle_level_radians)
+    def __replace_ctg(self):
 
-    trig = []
+        for i in range(0, self.count_operands):
+            ctg_pos = self.task_for_comp.find('ctg')
 
-    temp_str_task = ''
 
-    if sin_a == True:
-        trig.append('sin({')
-    if cos_a == True:
-        trig.append('cos({')
-    if tg_a == True:
-        trig.append('tg({')
-    if ctg_a == True:
-        trig.append('ctg({')
+            if ctg_pos == -1:
+                return 0
 
-    trig_size = len(trig)
+            arg_count = int(self.task_for_comp[ctg_pos + 5])
 
+            temp_ctg = 'ctg({' + str(arg_count) + '})'
+            temp_replaced_ctg = '(cos({' + str(arg_count) + '})/sin({' + str(arg_count) + '}))'
 
-    count_operands = random.randint(1, 3)
+            self.task_for_comp = self.task_for_comp.replace(temp_ctg, temp_replaced_ctg)
 
-    # counter - нужен для обозначения аргументов в строке, для функции .format()
-    counter = 0
 
-    # Генерируем случайный пример
-    for a in range(0, count_operands):
-        # В temp_str_task сначала записываем тригонометрическую функцию, потом добавляем '}) ', а потом рандомный оператор
-        temp_str_task += trig[random.randint(0, (trig_size - 1))] + str(counter) + '}) ' + operators[
-            random.randint(0, 3)] + ' '
-        counter += 1
 
-    temp_str_task = temp_str_task[0:-2]
-    temp_str_task_c = temp_str_task
+    def __change_task_comp(self):
+        self.task_for_comp = self.task_for_comp.replace('×', '*')
+        self.task_for_comp = self.task_for_comp.replace('÷', '/')
+        self.task_for_comp = self.task_for_comp.replace('°', '')
+        self.task_for_comp = self.task_for_comp.replace(' ', '')
+        self.task_for_comp = self.task_for_comp.replace('sin', 'math.sin')
+        self.task_for_comp = self.task_for_comp.replace('cos', 'math.cos')
+        self.task_for_comp = self.task_for_comp.replace('tg', 'math.tan')
 
-    list_arguments = []
-    for arg in range(0, count_operands):
-        g_or_r = random.randint(1, 2)
 
-        if g_or_r == 1:
-            num = middle_level_graduses[random.randint(0, m_l_g_size - 1)]
-            list_arguments.append(str(num) + '°') # Здесь мы добавляем '°' только на число, а не на радианы
-        elif g_or_r == 2:
-            num = middle_level_radians[random.randint(0, m_l_r_size - 1)]
-            list_arguments.append(num)
 
-    temp_str_task = temp_str_task.format(*list_arguments)
+    def generate_task(self, level):
 
-    ctg_pos = temp_str_task_c.find('ctg')
+        # Легкий уровень
+        if level == 0:
+            self.graduses_list = [30, 45, 60, 90, 120, 135, 150, 180, 270, 360]
+            self.graduses_list_size = len(self.graduses_list)
 
-    arg_count = 0
+            self.__init_trigonometric_list()
+            self.count_operands = random.randint(1, 3)
+            self.__generate_template_task()
 
-    # Если ctg является вторым операндом, то arg_count будет 1
-    if ctg_pos >= 9 and ctg_pos <= 18:
-        arg_count = 1
-    # И если ctg является третим операндом, то arg_count будет 2
-    elif ctg_pos >= 20 and ctg_pos <= 29:
-        arg_count = 2
+            self.task_for_user = self.task_for_user[0:-2]
+            self.task_for_comp = self.task_for_user
 
+            temp_list_graduses = []
+            for i in range(0, self.count_operands):
+                gradus = self.graduses_list[random.randint(0, self.graduses_list_size - 1)]
+                temp_list_graduses.append(str(gradus) + '°')
 
-    list_radians = []
-    for i in range(0, count_operands):
-        temp_arg = list_arguments[i]
-        temp_arg = temp_arg.replace('π', 'math.pi')
-        temp_arg = temp_arg.replace('°', '')
-        temp_arg = temp_arg.replace('×', '*')
+            self.task_for_user = self.task_for_user.format(*temp_list_graduses)
 
-        if temp_arg.find('pi') != -1:
-            list_radians.append(round(eval(temp_arg), decimal_places))
-        else:
-            list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
+            self.__replace_ctg()
 
 
+            temp_list_radians = []
+            for i in range(0, self.count_operands):
+                temp_grad = self.graduses_list[i]
+                temp_radian = math.radians(temp_grad)
+                temp_list_radians.append(round(temp_radian, decimal_places))
 
-    # идем по стандартной формуле sin(a) / cos(a)
-    temp_str_task_c = temp_str_task_c.replace('ctg({' + str(arg_count) + '})',
-                                              '(cos({' + str(arg_count) + '})/sin({' + str(arg_count) + '}))').format(*list_radians)
+            self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
-    temp_str_task_c = temp_str_task_c.replace('×', '*')
-    temp_str_task_c = temp_str_task_c.replace('÷', '/')
-    temp_str_task_c = temp_str_task_c.replace('°', '')
-    temp_str_task_c = temp_str_task_c.replace(' ', '')
-    temp_str_task_c = temp_str_task_c.replace('sin', 'math.sin')
-    temp_str_task_c = temp_str_task_c.replace('cos', 'math.cos')
-    temp_str_task_c = temp_str_task_c.replace('tg', 'math.tan')
+            self.__change_task_comp()
 
+        # Средний уровень
+        elif level == 1:
 
-    return (temp_str_task, temp_str_task_c)
+            for i in range(5, 360, 5):
+                self.graduses_list.append(i)
 
+            self.graduses_list_size = len(self.graduses_list)
 
+            self.__init_trigonometric_list()
+            self.count_operands = random.randint(1, 3)
+            self.__generate_template_task()
 
+            self.task_for_user = self.task_for_user[0:-2]
+            self.task_for_comp = self.task_for_user
 
-def generate_high_level(sin_a, cos_a, tg_a, ctg_a):
+            temp_list_arguments = []
+            for i in range(0, self.count_operands):
+                g_or_r = random.randint(1, 2)
 
-    high_level_graduses = []
-    for i in range(1, 720):
-        high_level_graduses.append(i)
+                if g_or_r == 1:
+                    num = self.graduses_list[random.randint(0, self.graduses_list_size)]
+                    temp_list_arguments.append(str(num))
+                elif g_or_r == 2:
+                    num = self.radian_lists[random.randint(0, self.radian_lists_size)]
+                    temp_list_arguments.append(str(num))
 
-    h_l_g_size = len(high_level_graduses)
 
-    # π
-    high_level_radians = ['π/4', 'π/3', 'π/2', '2 × π/3', '3 × π/4', '5 × π/6', 'π', '3 × π/2', '2 × π']
-    h_l_r_size = len(high_level_radians)
+            self.task_for_user = self.task_for_user.format(*temp_list_arguments)
 
-    trig = []
+            self.__replace_ctg()
 
-    temp_str_task = ''
+            temp_list_radians = []
+            for i in range(0, self.count_operands):
+                temp_arg = temp_list_arguments[i]
+                temp_arg = temp_arg.replace('π', 'math.pi')
+                temp_arg = temp_arg.replace('°', '')
+                temp_arg = temp_arg.replace('×', '*')
 
-    if sin_a == True:
-        trig.append('sin({')
-    if cos_a == True:
-        trig.append('cos({')
-    if tg_a == True:
-        trig.append('tg({')
-    if ctg_a == True:
-        trig.append('ctg({')
+                if temp_arg.find('pi') != -1:
+                    temp_list_radians.append(round(eval(temp_arg), decimal_places))
+                else:
+                    temp_list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
 
-    trig_size = len(trig)
+            self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
-    count_operands = random.randint(1, 4)
+            self.__change_task_comp()
 
-    # counter - нужен для обозначения аргументов в строке, для функции .format()
-    counter = 0
 
-    # Генерируем случайный пример
-    for a in range(0, count_operands):
-        # В temp_str_task сначала записываем тригонометрическую функцию, потом добавляем '}) ', а потом рандомный оператор
-        temp_str_task += trig[random.randint(0, (trig_size - 1))] + str(counter) + '}) ' + operators[
-            random.randint(0, 3)] + ' '
-        counter += 1
+        # Сложный уровень
+        elif level == 2:
+            for i in range(5, 360, 5):
+                self.graduses_list.append(i)
 
-    temp_str_task = temp_str_task[0:-2]
-    temp_str_task_c = temp_str_task
+            self.graduses_list_size = len(self.graduses_list)
 
-    list_arguments = []
-    for arg in range(0, count_operands):
-        g_or_r = random.randint(1, 2)
+            self.__init_trigonometric_list()
+            self.count_operands = random.randint(1, 3)
+            self.__generate_template_task()
 
-        if g_or_r == 1:
-            num = high_level_graduses[random.randint(0, h_l_g_size - 1)]
-            list_arguments.append(str(num) + '°')  # Здесь мы добавляем '°' только на число, а не на радианы
-        elif g_or_r == 2:
-            num = high_level_radians[random.randint(0, h_l_r_size - 1)]
-            list_arguments.append(num)
+            self.task_for_user = self.task_for_user[0:-2]
+            self.task_for_comp = self.task_for_user
 
-    temp_str_task = temp_str_task.format(*list_arguments)
+            temp_list_arguments = []
+            for i in range(0, self.count_operands):
+                g_or_r = random.randint(1, 2)
 
-    ctg_pos = temp_str_task_c.find('ctg')
+                if g_or_r == 1:
+                    num = self.graduses_list[random.randint(0, self.graduses_list_size - 1)]
+                    temp_list_arguments.append(str(num))
+                elif g_or_r == 2:
+                    num = self.radian_lists[random.randint(0, self.radian_lists_size - 1)]
+                    temp_list_arguments.append(str(num))
 
-    arg_count = 0
+            self.task_for_user = self.task_for_user.format(*temp_list_arguments)
 
-    # Если ctg является вторым операндом, то arg_count будет 1
-    if ctg_pos >= 9 and ctg_pos <= 18:
-        arg_count = 1
-    # И если ctg является третим операндом, то arg_count будет 2
-    elif ctg_pos >= 20 and ctg_pos <= 29:
-        arg_count = 2
+            self.__replace_ctg()
 
-    list_radians = []
-    for i in range(0, count_operands):
-        temp_arg = list_arguments[i]
-        temp_arg = temp_arg.replace('π', 'math.pi')
-        temp_arg = temp_arg.replace('°', '')
-        temp_arg = temp_arg.replace('×', '*')
+            temp_list_radians = []
+            for i in range(0, self.count_operands):
+                temp_arg = temp_list_arguments[i]
+                temp_arg = temp_arg.replace('π', 'math.pi')
+                temp_arg = temp_arg.replace('°', '')
+                temp_arg = temp_arg.replace('×', '*')
 
-        if temp_arg.find('pi') != -1:
-            list_radians.append(round(eval(temp_arg), decimal_places))
-        else:
-            list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
+                if temp_arg.find('pi') != -1:
+                    temp_list_radians.append(round(eval(temp_arg), decimal_places))
+                else:
+                    temp_list_radians.append(round(math.radians(float(temp_arg)), decimal_places))
 
-    # идем по стандартной формуле sin(a) / cos(a)
-    temp_str_task_c = temp_str_task_c.replace('ctg({' + str(arg_count) + '})',
-                                              '(cos({' + str(arg_count) + '})/sin({' + str(arg_count) + '}))').format(
-        *list_radians)
+            self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
-    temp_str_task_c = temp_str_task_c.replace('×', '*')
-    temp_str_task_c = temp_str_task_c.replace('÷', '/')
-    temp_str_task_c = temp_str_task_c.replace('°', '')
-    temp_str_task_c = temp_str_task_c.replace(' ', '')
-    temp_str_task_c = temp_str_task_c.replace('sin', 'math.sin')
-    temp_str_task_c = temp_str_task_c.replace('cos', 'math.cos')
-    temp_str_task_c = temp_str_task_c.replace('tg', 'math.tan')
+            self.__change_task_comp()
 
-    return (temp_str_task, temp_str_task_c)
+        return (self.task_for_user, self.task_for_comp)
+
+
+
