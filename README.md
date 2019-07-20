@@ -1,7 +1,7 @@
 # Trigonometric-Task-Generator
 Генератор тригонометрических выражений
 
-#Install on Linux
+# Install on Linux
 
 First you need a Python 3.6.8
 
