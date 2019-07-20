@@ -56,6 +56,8 @@ class MainWindow(QMainWindow):
         self.ui.btnAddPi_2.setEnabled(False)
         self.ui.btnAddSqrt_1.setEnabled(False)
         self.ui.btnAddSqrt_2.setEnabled(False)
+        self.ui.editLineUserAnswerN.setEnabled(False)
+        self.ui.editLineUserAnswerD.setEnabled(False)
 
 
     # Начало генерации выражений
@@ -85,6 +87,8 @@ class MainWindow(QMainWindow):
         self.ui.btnAddPi_2.setEnabled(True)
         self.ui.btnAddSqrt_1.setEnabled(True)
         self.ui.btnAddSqrt_2.setEnabled(True)
+        self.ui.editLineUserAnswerN.setEnabled(True)
+        self.ui.editLineUserAnswerD.setEnabled(True)
 
 
         if self.ui.cbLevel.currentText() == 'Легкая':
@@ -119,6 +123,9 @@ class MainWindow(QMainWindow):
             try:
 
                 self.comp_result = round(comp_result_n / comp_result_d, self.decimal_places)
+
+                if self.comp_result > 10000:
+                    self.begin()
 
             except ZeroDivisionError:
                 self.begin()
@@ -179,8 +186,8 @@ class MainWindow(QMainWindow):
             else:
                 self.ui.lbStatus.setText('Ответ не верный.')
 
-            print (result)
-            print (self.comp_result)
+            #print (result)
+            #print (self.comp_result)
 
         except:
             msg = QMessageBox()

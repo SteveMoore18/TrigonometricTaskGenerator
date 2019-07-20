@@ -198,7 +198,7 @@ class Generate:
             # Форматируем выражение для компьютера
             self.task_for_comp = self.task_for_comp.format(*temp_list_radians)
 
-            print (self.task_for_comp)
+
 
 
 
