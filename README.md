@@ -1,6 +1,8 @@
 # Trigonometric-Task-Generator
 Генератор тригонометрических выражений
 
+[![CalculatorPro](https://hhcdn.ru/photo/558214633.png?t=1601494330&h=hFPi6Oxtj_NVcoNB3F2XsA "CalculatorPro")](https://hhcdn.ru/photo/558214633.png?t=1601494330&h=hFPi6Oxtj_NVcoNB3F2XsA "CalculatorPro")
+
 ### Install on Linux
 
 First you need a Python 3.6.8 or later
